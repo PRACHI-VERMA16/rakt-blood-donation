@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rakt - Blood Donation Network</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --crimson: #A61C00; --crimson-dark: #7A1300; --crimson-light: #C0392B;
+      --rose: #E8736B; --blush: #FDE8E6; --charcoal: #1C1C1E;
+      --slate: #3A3A3C; --mist: #F5F0EF; --border: #E8D5D2;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--mist); color: var(--charcoal); }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: sticky; top: 0; z-index: 999;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px; display: flex; align-items: center;
+      justify-content: space-between; height: 68px;
+    }
+
+    /* LOGO FIX — "by Prachi Verma" small above RAKT */
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; text-decoration: none;
+    }
+    .logo-drop { font-size: 1.5rem; }
+    .logo-text-wrap { display: flex; flex-direction: column; }
+    .logo-by {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      color: #aaa; letter-spacing: 0.05em;
+      line-height: 1; margin-bottom: 1px;
+    }
+    .logo-rakt {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem; font-weight: 900;
+      color: var(--crimson); line-height: 1;
+    }
+
+    nav ul { display: flex; align-items: center; gap: 4px; list-style: none; }
+    nav ul li a {
+      display: block; font-size: 0.9rem; font-weight: 500; color: var(--slate);
+      padding: 8px 14px; border-radius: 8px; text-decoration: none;
+      transition: all 0.2s;
+    }
+    nav ul li a:hover, nav ul li a.active { background: var(--blush); color: var(--crimson); }
+    .btn-em {
+      background: var(--crimson) !important; color: #fff !important;
+      padding: 10px 22px !important; border-radius: 8px !important;
+      font-weight: 600 !important; box-shadow: 0 4px 12px rgba(166,28,0,.3) !important;
+    }
+    .btn-em:hover { background: var(--crimson-dark) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--crimson-dark) 0%, var(--crimson-light) 55%, var(--rose) 100%);
+      min-height: 88vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 80px 48px; position: relative; overflow: hidden;
+    }
+    .hero::before { content:''; position:absolute; top:-80px; right:-80px; width:380px; height:380px; border-radius:50%; background:rgba(255,255,255,.05); }
+    .hero-drop { font-size: 3.5rem; margin-bottom: 24px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .hero h1 { font-family:'Playfair Display',serif; font-size:3.6rem; font-weight:900; color:#fff; margin-bottom:18px; line-height:1.15; }
+    .hero p { color:rgba(255,255,255,.8); font-size:1.15rem; max-width:560px; margin-bottom:40px; }
+    .hero-btns { display:flex; gap:16px; }
+    .btn-solid { padding:14px 36px; background:#fff; color:var(--crimson); border:none; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(0,0,0,.15); }
+    .btn-solid:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.2); }
+    .btn-outline-w { padding:14px 36px; background:transparent; color:#fff; border:2px solid rgba(255,255,255,.7); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .btn-outline-w:hover { background:rgba(255,255,255,.12); border-color:#fff; transform:translateY(-2px); }
+
+    /* ── STATS ── */
+    .stats {
+      background: #fff; padding: 64px 48px;
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-card { text-align:center; padding:24px; border-radius:12px; transition:background .2s, transform .2s; }
+    .stat-card:hover { background:var(--blush); transform:translateY(-4px); }
+    .stat-icon { font-size:2rem; margin-bottom:12px; }
+    .stat-card h2 { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:900; color:var(--crimson); margin-bottom:4px; }
+    .stat-card p { font-size:.9rem; color:#888; font-weight:500; }
+
+    /* ── WHY DONATE — FIXED ── */
+    .why-donate { padding: 80px 48px; text-align: center; background: var(--mist); }
+    .section-label { font-size:.78rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--crimson); margin-bottom:10px; }
+    .why-donate h2 { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:900; color:var(--charcoal); margin-bottom:10px; }
+    .why-donate > p { color:#888; font-size:1rem; margin-bottom:48px; }
+
+    /* KEY FIX: 4-column grid */
+    .why-cards {
+      display: grid !important;
+      grid-template-columns: repeat(4, 1fr) !important;
+      gap: 20px;
+    }
+    .why-card {
+      background: #fff; border-radius: 16px; padding: 36px 24px;
+      border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(0,0,0,.04);
+      transition: transform .25s, box-shadow .25s; text-align: center;
+    }
+    .why-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(166,28,0,.12); }
+    .why-icon {
+      width:60px; height:60px; border-radius:50%; background:var(--blush);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.6rem; margin:0 auto 18px;
+    }
+    .why-card h3 { font-size:1.05rem; font-weight:700; color:var(--charcoal); margin-bottom:8px; }
+    .why-card p  { font-size:.87rem; color:#999; line-height:1.6; }
+
+    /* ── EMERGENCY — FIXED ── */
+    .emergency-section {
+      padding: 80px 48px; background: #fff; text-align: center;
+    }
+    .emergency-section .section-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--blush); display: flex; align-items: center;
+      justify-content: center; font-size: 1.8rem; margin: 0 auto 20px;
+    }
+    .emergency-section h2 {
+      font-family: 'Playfair Display', serif; font-size: 2.4rem;
+      font-weight: 900; color: var(--crimson); margin-bottom: 10px;
+    }
+    .emergency-section > p { color: #888; margin-bottom: 36px; }
+
+    /* Filter row */
+    .filter-row {
+      display: flex; justify-content: center;
+      gap: 14px; flex-wrap: wrap; margin-bottom: 36px;
+    }
+    .filter-row input,
+    .filter-row select {
+      padding: 11px 16px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-family: 'DM Sans', sans-serif;
+      font-size: .9rem; color: var(--charcoal); background: var(--mist);
+      outline: none; min-width: 180px; transition: border-color .2s;
+    }
+    .filter-row input:focus,
+    .filter-row select:focus { border-color: var(--crimson); background: #fff; }
+
+    /* Request grid — 3 columns */
+    .request-grid {
+      display: grid !important;
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 20px; text-align: left; margin-bottom: 36px;
+    }
+    .request-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 16px;
+      padding: 22px 24px; box-shadow: 0 2px 12px rgba(0,0,0,.04);
+      transition: transform .25s, box-shadow .25s;
+      animation: fadeUp .4s ease both;
+    }
+    .request-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(166,28,0,.12); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+    .req-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+    .blood-big {
+      font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 900;
+      color: var(--crimson); background: var(--blush); padding: 8px 16px;
+      border-radius: 10px; border: 2px solid rgba(166,28,0,.12); line-height: 1;
+    }
+    .req-info .hospital { font-size: 1rem; font-weight: 700; color: var(--charcoal); }
+    .req-info .units    { font-size: .87rem; color: #777; font-weight: 500; }
+    .badge { padding: 5px 14px; border-radius: 20px; font-size: .77rem; font-weight: 700; }
+    .critical { background:#FFEBEE; color:#B71C1C; border:1px solid #EF9A9A; }
+    .urgent   { background:#FFF8E1; color:#F57F17; border:1px solid #FFE082; }
+    .moderate { background:#E8F5E9; color:#1B5E20; border:1px solid #A5D6A7; }
+    .req-meta { display:flex; flex-wrap:wrap; gap:12px; margin:10px 0 16px; font-size:.84rem; color:#888; }
+    .btn-ch {
+      width:100%; padding:11px; background:var(--crimson); color:#fff; border:none;
+      border-radius:10px; font-family:'DM Sans',sans-serif; font-size:.9rem;
+      font-weight:600; cursor:pointer; transition:all .2s;
+    }
+    .btn-ch:hover { background:var(--crimson-dark); transform:translateY(-1px); }
+
+    .btn-view-all {
+      padding:13px 40px; background:transparent; color:var(--crimson);
+      border:2px solid var(--crimson); border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600;
+      cursor:pointer; transition:all .2s;
+    }
+    .btn-view-all:hover { background:var(--crimson); color:#fff; }
+
+    /* ── BLOOD TYPE COMPATIBILITY ── */
+    .compatibility { padding:80px 48px; background:var(--mist); text-align:center; }
+    .compatibility h2 { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:900; color:var(--charcoal); margin-bottom:8px; }
+    .compatibility > p { color:#888; margin-bottom:36px; }
+    .compat-finder { display:flex; justify-content:center; align-items:center; gap:14px; margin-bottom:48px; flex-wrap:wrap; }
+    .compat-finder select { padding:12px 18px; border:1.5px solid var(--border); border-radius:8px; font-family:'DM Sans',sans-serif; font-size:.95rem; outline:none; background:#fff; min-width:220px; cursor:pointer; }
+    .compat-finder select:focus { border-color:var(--crimson); }
+    .btn-compat { padding:12px 28px; background:var(--crimson); color:#fff; border:none; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:.95rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .btn-compat:hover { background:var(--crimson-dark); transform:translateY(-1px); }
+    .blood-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+    .blood-card { background:#fff; border:1px solid var(--border); border-radius:12px; padding:22px; text-align:left; box-shadow:0 2px 10px rgba(0,0,0,.04); transition:transform .25s, box-shadow .25s; }
+    .blood-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(166,28,0,.1); }
+    .bc-type { font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:var(--crimson); margin-bottom:2px; }
+    .bc-pct  { font-size:.82rem; color:#aaa; margin-bottom:14px; }
+    .bc-label { font-size:.77rem; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:.08em; margin-bottom:7px; }
+    .bc-tags  { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+    .bc-tag   { padding:3px 10px; border-radius:6px; font-size:.78rem; font-weight:600; background:var(--blush); color:var(--crimson); }
+
+    /* ── REGISTER ── */
+    .register-section { padding:80px 48px; background:#fff; text-align:center; }
+    .register-section h2 { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:900; color:var(--crimson); margin-bottom:8px; }
+    .register-section > p { color:#888; margin-bottom:40px; }
+    .form-box { background:var(--mist); border:1px solid var(--border); border-radius:20px; padding:40px 48px; max-width:960px; margin:0 auto; box-shadow:0 4px 24px rgba(166,28,0,.1); text-align:left; }
+    .form-box h3 { font-size:1.2rem; font-weight:700; color:var(--charcoal); margin-bottom:4px; }
+    .form-box > p { font-size:.87rem; color:#aaa; margin-bottom:28px; }
+    .form-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:28px; }
+    .fg { display:flex; flex-direction:column; gap:6px; }
+    .fg label { font-size:.82rem; font-weight:600; color:var(--slate); }
+    .fg input, .fg select {
+      padding:12px 16px; border:1.5px solid var(--border); border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:.93rem; color:var(--charcoal);
+      background:#fff; outline:none; transition:border-color .2s, box-shadow .2s;
+    }
+    .fg input:focus, .fg select:focus { border-color:var(--crimson); box-shadow:0 0 0 3px rgba(166,28,0,.07); }
+    .btn-register {
+      width:100%; padding:15px;
+      background:linear-gradient(135deg,var(--crimson-dark),var(--crimson-light));
+      color:#fff; border:none; border-radius:8px;
+      font-family:'DM Sans',sans-serif; font-size:1.05rem; font-weight:700;
+      cursor:pointer; transition:all .2s; box-shadow:0 4px 16px rgba(166,28,0,.3);
+    }
+    .btn-register:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(166,28,0,.4); }
+
+    /* ── FOOTER ── */
+    footer { background:var(--charcoal); color:rgba(255,255,255,.65); padding:64px 48px 28px; }
+    .footer-grid { display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:40px; margin-bottom:48px; }
+    .footer-logo { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .footer-logo-text { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; color:#fff; }
+    .footer-brand p { font-size:.88rem; line-height:1.6; color:rgba(255,255,255,.5); margin-bottom:6px; }
+    .footer-brand small { font-size:.76rem; color:rgba(255,255,255,.3); }
+    .footer-col h4 { color:#fff; font-size:.9rem; font-weight:700; margin-bottom:16px; }
+    .footer-col ul { display:flex; flex-direction:column; gap:10px; list-style:none; }
+    .footer-col ul li a { font-size:.88rem; color:rgba(255,255,255,.5); text-decoration:none; transition:color .2s; }
+    .footer-col ul li a:hover { color:var(--rose); }
+    .footer-contact p { display:flex; align-items:center; gap:8px; font-size:.87rem; margin-bottom:10px; color:rgba(255,255,255,.5); }
+    .footer-bottom { border-top:1px solid rgba(255,255,255,.08); padding-top:24px; text-align:center; font-size:.82rem; color:rgba(255,255,255,.28); }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){
+      .why-cards    { grid-template-columns:repeat(2,1fr) !important; }
+      .request-grid { grid-template-columns:repeat(2,1fr) !important; }
+      .blood-grid   { grid-template-columns:repeat(2,1fr); }
+      .stats        { grid-template-columns:repeat(2,1fr); }
+      .form-grid    { grid-template-columns:repeat(2,1fr); }
+      .footer-grid  { grid-template-columns:1fr 1fr; }
+      nav { padding:0 20px; }
+    }
+    @media(max-width:600px){
+      .why-cards    { grid-template-columns:1fr !important; }
+      .request-grid { grid-template-columns:1fr !important; }
+      .blood-grid   { grid-template-columns:1fr 1fr; }
+      .stats        { grid-template-columns:1fr 1fr; padding:32px 16px; }
+      .form-grid    { grid-template-columns:1fr; }
+      .footer-grid  { grid-template-columns:1fr; }
+      .hero h1      { font-size:2.2rem; }
+      .hero-btns    { flex-direction:column; align-items:center; }
+      nav           { padding:0 16px; }
+      .why-donate, .emergency-section, .compatibility, .register-section { padding:60px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a href="#home" class="logo">
+    <span class="logo-drop">🩸</span>
+    <div class="logo-text-wrap">
+      <span class="logo-by">by Prachi Verma</span>
+      <span class="logo-rakt">Rakt</span>
+    </div>
+  </a>
+  <ul>
+    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="#register">Register</a></li>
+    <li><a href="find_donar.html">Find Donors</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="emergency.html" class="btn-em">Emergency Request</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="hero">
+  <div class="hero-drop">💧</div>
+  <h1>Donate Blood, Save Lives</h1>
+  <p>Join Rakt — India's largest blood donation network. Every donation can save up to three lives. Be a hero today.</p>
+  <div class="hero-btns">
+    <button class="btn-solid" onclick="document.getElementById('register').scrollIntoView({behavior:'smooth'})">Donate Blood</button>
+    <button class="btn-outline-w" onclick="window.location.href='find_donar.html'">Find Donors</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="stat-card"><div class="stat-icon">👥</div><h2>50,000+</h2><p>Active Donors</p></div>
+  <div class="stat-card"><div class="stat-icon">💧</div><h2>1,25,000+</h2><p>Lives Saved</p></div>
+  <div class="stat-card"><div class="stat-icon">📈</div><h2>500+</h2><p>Blood Camps</p></div>
+  <div class="stat-card"><div class="stat-icon">🏥</div><h2>100+</h2><p>Partner Hospitals</p></div>
+</section>
+
+<!-- WHY DONATE -->
+<section class="why-donate">
+  <div class="section-label">Why It Matters</div>
+  <h2>Why Donate Blood?</h2>
+  <p>Blood donation is a simple act of kindness that has profound impact. Here's why you should donate.</p>
+  <div class="why-cards">
+    <div class="why-card">
+      <div class="why-icon">❤️</div>
+      <h3>Save Lives</h3>
+      <p>One donation can save up to three lives including red blood cells, plasma, and platelets.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🛡️</div>
+      <h3>Health Benefits</h3>
+      <p>Regular blood donation helps reduce risk of heart disease and maintain healthy iron levels.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">⏱️</div>
+      <h3>Quick &amp; Easy</h3>
+      <p>The entire process takes less than an hour and can be done every 3 months.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🎁</div>
+      <h3>Free Health Check</h3>
+      <p>Get a free mini health checkup including blood type test every time you donate.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EMERGENCY BLOOD REQUESTS -->
+<section class="emergency-section" id="emergency">
+  <div class="section-icon">🚨</div>
+  <h2>Emergency Blood Requests</h2>
+  <p>These patients need your help urgently. If you can donate, please reach out immediately.</p>
+
+  <div class="filter-row">
+    <input type="text" id="filterCity" placeholder="Search by city...">
+    <select id="filterBlood">
+      <option value="">All Blood Types</option>
+      <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+      <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+    </select>
+    <select id="filterUrgency">
+      <option value="">All Urgency Levels</option>
+      <option>Critical</option><option>Urgent</option><option>Moderate</option>
+    </select>
+  </div>
+
+  <div class="request-grid" id="requestGrid"></div>
+  <button class="btn-view-all" onclick="window.location.href='emergency.html'">View All Requests</button>
+</section>
+
+<!-- BLOOD TYPE COMPATIBILITY -->
+<section class="compatibility">
+  <h2>Blood Type Compatibility</h2>
+  <p>Select your blood type to find out which blood types you can donate to and receive from.</p>
+
+  <div class="compat-finder">
+    <select id="bloodTypeSelect">
+      <option value="">Select your blood type</option>
+      <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+      <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+    </select>
+    <button class="btn-compat" onclick="findCompat()">Find Compatibility</button>
+  </div>
+
+  <div class="blood-grid" id="bloodGrid"></div>
+</section>
+
+<!-- REGISTER -->
+<section class="register-section" id="register">
+  <div style="font-size:2rem;margin-bottom:16px">👤</div>
+  <h2>Register as a Donor</h2>
+  <p>Join our community of life-savers. Your blood can make a difference in someone's life.</p>
+  <div class="form-box">
+    <h3>Donor Information</h3>
+    <p>Please fill in your details to register as a blood donor</p>
+    <div class="form-grid">
+      <div class="fg"><label>Full Name *</label><input type="text" id="fullName" placeholder="Enter your full name"></div>
+      <div class="fg"><label>Email *</label><input type="email" id="email" placeholder="your.email@example.com"></div>
+      <div class="fg"><label>Phone Number *</label><input type="tel" id="phone" placeholder="+91 98765 43210"></div>
+      <div class="fg"><label>Age *</label><input type="number" id="age" placeholder="18" min="18"></div>
+      <div class="fg"><label>Blood Type *</label>
+        <select id="bloodType">
+          <option value="">Select blood type</option>
+          <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+          <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+        </select>
+      </div>
+      <div class="fg"><label>City *</label><input type="text" id="city" placeholder="Enter your city"></div>
+    </div>
+    <button class="btn-register" onclick="registerDonor()">Register as Donor</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="about">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span style="font-size:1.4rem">🩸</span>
+        <div>
+          <div style="font-size:.65rem;color:rgba(255,255,255,.35);font-family:'DM Sans',sans-serif">by Prachi Verma</div>
+          <div class="footer-logo-text">Rakt</div>
+        </div>
+      </div>
+      <p>Connecting blood donors with those in need. Save lives, donate blood.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#register">Register as Donor</a></li>
+        <li><a href="find-donors.html">Find Donors</a></li>
+        <li><a href="#">Blood Camps</a></li>
+        <li><a href="#">FAQs</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-contact">
+      <h4>Contact Us</h4>
+      <p>📧 contact@rakt.org</p>
+      <p>📞 1800-XXX-XXXX (Toll Free)</p>
+      <p>📍 Mumbai, Maharashtra, India</p>
+    </div>
+    <div class="footer-col">
+      <h4>Follow Us</h4>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <div style="width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer">f</div>
+        <div style="width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer">𝕏</div>
+        <div style="width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer">📸</div>
+        <div style="width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer">in</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Rakt. All rights reserved. Every drop counts.</div>
+</footer>
+
+<script>
+  // ── PHP API paths ──
+  const API = {
+    emergency : '../php/emergency_rquest.php',
+    register  : '../php/register_donar.php',
+    donors    : '../php/find_donar.php'
+  };
+
+  // ── EMERGENCY REQUESTS ──
+  function bc(u){ return u==='Critical'?'critical':u==='Urgent'?'urgent':'moderate'; }
+
+  function renderRequests(data){
+    const grid = document.getElementById('requestGrid');
+    if(!data.length){
+      grid.innerHTML = '<p style="text-align:center;color:#aaa;padding:40px;grid-column:1/-1">Koi request nahi mili</p>';
+      return;
+    }
+    grid.innerHTML = data.map((r,i)=>`
+      <div class="request-card" style="animation-delay:${i*.07}s">
+        <div class="req-top">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="blood-big">${r.blood_type}</div>
+            <div class="req-info">
+              <div class="units">${r.units_needed} Unit${r.units_needed>1?'s':''} needed</div>
+              <div class="hospital">${r.hospital}</div>
+            </div>
+          </div>
+          <span class="badge ${bc(r.urgency)}">${r.urgency}</span>
+        </div>
+        <div class="req-meta">
+          <span>📍 ${r.city}</span>
+          <span>⏱ ${r.time_ago}</span>
+          <span>📞 ${r.contact_phone}</span>
+        </div>
+        <button class="btn-ch" onclick="if(confirm('Call ${r.contact_phone}?'))location.href='tel:${r.contact_phone}'">Contact Hospital</button>
+      </div>`).join('');
+  }
+
+  async function loadEmergency(city='', blood='', urgency=''){
+    try {
+      const url = `${API.emergency}?city=${encodeURIComponent(city)}&blood_type=${encodeURIComponent(blood)}&urgency=${encodeURIComponent(urgency)}&limit=6`;
+      const res  = await fetch(url);
+      const data = await res.json();
+      if(data.success) renderRequests(data.requests);
+      else             renderRequests([]);
+    } catch(e) {
+      console.error('Emergency fetch error:', e);
+      renderRequests([]);
+    }
+  }
+
+  loadEmergency();
+
+  // Filter listeners
+  ['filterCity','filterBlood','filterUrgency'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      loadEmergency(
+        document.getElementById('filterCity').value.trim(),
+        document.getElementById('filterBlood').value,
+        document.getElementById('filterUrgency').value
+      );
+    });
+  });
+
+  // ── BLOOD COMPATIBILITY ──
+  const compat = {
+    'A+' :{ donate:['A+','AB+'],            receive:['A+','A-','O+','O-'], pct:'35.7%' },
+    'A-' :{ donate:['A+','A-','AB+','AB-'], receive:['A-','O-'],           pct:'6.3%'  },
+    'B+' :{ donate:['B+','AB+'],            receive:['B+','B-','O+','O-'], pct:'8.5%'  },
+    'B-' :{ donate:['B+','B-','AB+','AB-'], receive:['B-','O-'],           pct:'1.5%'  },
+    'O+' :{ donate:['O+','A+','B+','AB+'],  receive:['O+','O-'],           pct:'37.4%' },
+    'O-' :{ donate:['All Types'],           receive:['O-'],                pct:'6.6%'  },
+    'AB+':{ donate:['AB+'],                 receive:['All Types'],          pct:'3.4%'  },
+    'AB-':{ donate:['AB+','AB-'],           receive:['AB-','A-','B-','O-'],pct:'0.6%'  },
+  };
+
+  function renderBloodGrid(highlight){
+    document.getElementById('bloodGrid').innerHTML = Object.entries(compat).map(([bt,c])=>`
+      <div class="blood-card" style="${highlight===bt?'border-color:var(--crimson);box-shadow:0 0 0 3px rgba(166,28,0,.1)':''}">
+        <div class="bc-type">${bt}</div>
+        <div class="bc-pct">${c.pct} of population</div>
+        <div class="bc-label">Can donate to</div>
+        <div class="bc-tags">${c.donate.map(t=>`<span class="bc-tag" style="background:#E8F5E9;color:#2E7D32">${t}</span>`).join('')}</div>
+        <div class="bc-label">Can receive from</div>
+        <div class="bc-tags">${c.receive.map(t=>`<span class="bc-tag">${t}</span>`).join('')}</div>
+      </div>`).join('');
+  }
+  renderBloodGrid('');
+
+  function findCompat(){
+    const v = document.getElementById('bloodTypeSelect').value;
+    if(!v){ alert('Blood type select karo'); return; }
+    renderBloodGrid(v);
+    document.getElementById('bloodGrid').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  // ── REGISTER DONOR ──
+  async function registerDonor(){
+    const btn   = document.querySelector('.btn-register');
+    const name  = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const age   = document.getElementById('age').value;
+    const blood = document.getElementById('bloodType').value;
+    const city  = document.getElementById('city').value.trim();
+
+    if(!name||!email||!phone||!age||!blood||!city){
+      alert('❌ Sabhi fields fill karo!'); return;
+    }
+
+    btn.textContent = 'Registering...';
+    btn.disabled = true;
+
+    try {
+      const res  = await fetch(API.register, {
+        method  : 'POST',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ full_name:name, email, phone, age, blood_type:blood, city })
+      });
+      const data = await res.json();
+
+      if(data.success){
+        alert(`✅ ${data.message}`);
+        ['fullName','email','phone','age','city'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('bloodType').value = '';
+      } else {
+        alert(`❌ ${data.error}`);
+      }
+    } catch(e) {
+      alert('❌ Server se connect nahi ho paya. XAMPP chal raha hai?');
+      console.error(e);
+    }
+
+    btn.textContent = 'Register as Donor';
+    btn.disabled = false;
+  }
+</script>
+</body>
+</html>
